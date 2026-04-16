@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Narrative — Samma</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Outfit:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; background: #723D2E; color: #fff; }
+    body { overflow-x: hidden; }
+
+    /* Background layers */
+    #c-grad   { position: fixed; inset: 0; display: block; filter: blur(75px); transform: scale(1.18); transform-origin: center; z-index: 0; }
+    #c-grain  { position: fixed; inset: 0; display: block; pointer-events: none; mix-blend-mode: soft-light; opacity: 0.40; z-index: 1; }
+    .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 2;
+                background: radial-gradient(ellipse 140% 140% at 22% 22%, transparent 35%, rgba(35,14,6,0.32) 100%); }
+
+    /* Glow breath — typography */
+    @keyframes neonBreath {
+      0%, 100% { text-shadow: 0 0 4px rgba(255,225,195,0.60), 0 0 12px rgba(255,215,175,0.45), 0 0 28px rgba(240,190,150,0.28), 0 0 50px rgba(220,170,130,0.14), 0 0 80px rgba(210,160,120,0.06); }
+      50%      { text-shadow: 0 0 6px rgba(255,230,200,0.85), 0 0 18px rgba(255,220,185,0.62), 0 0 38px rgba(245,198,158,0.40), 0 0 70px rgba(228,178,138,0.22), 0 0 100px rgba(210,160,120,0.10); }
+    }
+    @keyframes neonBreathSoft {
+      0%, 100% { text-shadow: 0 0 3px rgba(255,225,195,0.50), 0 0 8px rgba(255,215,175,0.35), 0 0 22px rgba(240,190,150,0.20), 0 0 42px rgba(220,170,130,0.10); }
+      50%      { text-shadow: 0 0 5px rgba(255,230,200,0.72), 0 0 14px rgba(255,220,185,0.50), 0 0 30px rgba(245,198,158,0.32), 0 0 58px rgba(228,178,138,0.16); }
+    }
+    @keyframes logoBreath {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 12px rgba(255,235,210,1.00))
+          drop-shadow(0 0 30px rgba(255,225,190,0.82))
+          drop-shadow(0 0 62px rgba(248,205,165,0.58))
+          drop-shadow(0 0 105px rgba(232,182,142,0.38))
+          drop-shadow(0 0 170px rgba(215,165,125,0.22));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 18px rgba(255,240,220,1))
+          drop-shadow(0 0 42px rgba(255,232,205,1))
+          drop-shadow(0 0 82px rgba(252,215,178,0.80))
+          drop-shadow(0 0 135px rgba(238,194,154,0.54))
+          drop-shadow(0 0 210px rgba(220,172,130,0.32));
+      }
+    }
+    @keyframes fadeIn     { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInSoft { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 0.92; transform: translateY(0); } }
+
+    /* Logo top-left */
+    .brand-mark {
+      position: fixed;
+      top: 3.2vh; left: 3.2vw;
+      z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.45em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.35s ease;
+    }
+    .brand-mark:hover { opacity: 0.82; }
+    .brand-logo {
+      width: clamp(60px, 5.5vw, 90px);
+      height: auto; display: block;
+      animation: logoBreath 6s ease-in-out infinite;
+    }
+    .brand-location {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(6.8px, 0.51vw, 8.5px);
+      font-weight: 300;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      padding-left: 0.42em;
+    }
+
+    /* Top header (socials + Book CTA + menu toggle) */
+    .topbar-right {
+      position: fixed;
+      top: 3.2vh; right: 3.2vw;
+      z-index: 70;
+      display: flex; align-items: center;
+      gap: clamp(14px, 1.3vw, 22px);
+    }
+    .topnav-social { display: flex; align-items: center; gap: clamp(8px, 0.7vw, 12px); }
+    .topnav-social a {
+      color: rgba(255,255,255,0.75);
+      display: inline-flex; align-items: center; justify-content: center;
+      width: clamp(26px, 2vw, 32px);
+      height: clamp(26px, 2vw, 32px);
+      border-radius: 50%;
+      transition: color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .topnav-social a:hover { color: #fff; transform: translateY(-1px); }
+    .topnav-social svg { display: block; width: 60%; height: 60%; }
+
+    .cta {
+      display: inline-flex; align-items: center; gap: 0.9em;
+      padding: 0.85em 1.8em;
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(7px, 0.55vw, 9px);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 999px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: none;
+    }
+    .cta:hover { background: #fff; color: #723D2E; border-color: #723D2E; transition: none; }
+    .cta .arrow { display: inline-block; transition: none; }
+    .cta:hover .arrow { transform: translateX(3px); }
+    .cta.cta-book {
+      padding: 0.75em 1.5em;
+      font-size: clamp(8px, 0.62vw, 10.5px);
+      letter-spacing: 0.22em;
+      transition: none;
+    }
+    /* Book CTA stays exactly in place when the sidebar opens \u2014 no shift */
+    body.menu-open .topnav-social { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+
+    /* Menu button */
+    .menu-toggle {
+      position: relative; z-index: 1;
+      width: clamp(32px, 2.6vw, 42px);
+      height: clamp(32px, 2.6vw, 42px);
+      padding: 0; background: transparent; border: 0;
+      cursor: pointer; display: grid; place-items: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-bars {
+      position: relative;
+      width: clamp(20px, 1.55vw, 26px);
+      height: clamp(16px, 1.25vw, 22px);
+      display: block;
+      filter: drop-shadow(0 0 4px rgba(255,225,195,0.22));
+      transition: filter 0.4s ease;
+    }
+    .menu-toggle:hover .menu-bars { filter: drop-shadow(0 0 8px rgba(255,225,195,0.45)); }
+    .bar {
+      position: absolute; left: 0; height: 1px;
+      background: rgba(255,255,255,0.9);
+      transform-origin: 50% 50%;
+      transition: width 0.45s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.45s cubic-bezier(0.22,1,0.36,1),
+                  top 0.45s cubic-bezier(0.22,1,0.36,1),
+                  opacity 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .bar-1 { top: 0;    width: 75%; }
+    .bar-2 { top: 50%;  width: 92%; transform: translateY(-50%); }
+    .bar-3 { top: 100%; width: 58%; transform: translateY(-100%); }
+    .menu-toggle:hover .bar-1, .menu-toggle:hover .bar-3 { width: 92%; }
+    .menu-toggle:hover .bar { background: rgba(255,245,225,1); }
+    body.menu-open .menu-toggle .bar-1 { top: 50%; width: 92%; transform: translateY(-50%) rotate(-45deg); }
+    body.menu-open .menu-toggle .bar-2 { width: 0; opacity: 0; transform: translateY(-50%) scaleX(0); }
+    body.menu-open .menu-toggle .bar-3 { top: 50%; width: 92%; transform: translateY(-50%) rotate(45deg); }
+
+    /* Sidebar */
+    .menu-panel {
+      position: fixed; top: 0; right: 0;
+      width: min(17vw, 245px); height: 100vh;
+      z-index: 65;
+      background: rgba(48,20,12,0.94);
+      backdrop-filter: blur(18px) saturate(1.05);
+      -webkit-backdrop-filter: blur(18px) saturate(1.05);
+      border-left: 1px solid rgba(255,255,255,0.06);
+      padding: 14vh 2.2vw 6vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-start; align-items: flex-start;
+      gap: 3.2vh;
+      transform: translateX(100%);
+      transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+    body.menu-open .menu-panel { transform: translateX(0); pointer-events: auto; }
+    @media (max-width: 720px) { .menu-panel { width: 100vw; padding-left: 8vw; padding-right: 8vw; } }
+    .menu-nav { display: flex; width: 100%; }
+    .menu-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column;
+      align-items: flex-start; gap: 1.6vh;
+    }
+    .menu-list a {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(11px, 0.82vw, 14px);
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      padding: 0.35em 0;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .menu-list a::after {
+      content: ''; position: absolute; left: 0; bottom: 0;
+      width: 0; height: 1px;
+      background: rgba(255,235,210,0.85);
+      transition: width 0.45s cubic-bezier(0.22,1,0.36,1);
+    }
+    /* Hover \u2014 underline + gentle opacity dim, no size change */
+    body.menu-open .menu-list a:hover { opacity: 0.6; }
+    body.menu-open .menu-list a:hover::after { width: 1.3em; }
+    .menu-list a.is-current { color: rgba(255,235,210,1); }
+    .menu-list a.is-current::after { width: 1.3em; }
+    body.menu-open .menu-list a { opacity: 1; transform: translateY(0); }
+    body.menu-open .menu-list li:nth-child(1) a { transition-delay: 0.18s; }
+    body.menu-open .menu-list li:nth-child(2) a { transition-delay: 0.24s; }
+    body.menu-open .menu-list li:nth-child(3) a { transition-delay: 0.30s; }
+    body.menu-open .menu-list li:nth-child(4) a { transition-delay: 0.36s; }
+    body.menu-open .menu-list li:nth-child(5) a { transition-delay: 0.42s; }
+
+    .menu-foot {
+      display: flex; flex-direction: column;
+      align-items: flex-start; text-align: left;
+      gap: 0.25em; margin-top: auto;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(9px, 0.66vw, 11px);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      opacity: 0; transform: translateY(6px);
+      transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s;
+    }
+    .menu-foot a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
+    .menu-foot a:hover { color: rgba(255,235,210,1); }
+    body.menu-open .menu-foot { opacity: 1; transform: translateY(0); }
+    .menu-foot-social {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 1.6em; padding-top: 1.4em;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .menu-foot-social a {
+      width: 26px; height: 26px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: rgba(255,255,255,0.62);
+      transition: color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .menu-foot-social a:hover { color: rgba(255,235,210,1); transform: translateY(-1px); }
+    .menu-foot-social svg { display: block; }
+
+    .menu-scrim {
+      position: fixed; inset: 0; z-index: 62;
+      background: rgba(20,8,4,0);
+      pointer-events: none;
+      transition: background-color 0.55s ease;
+    }
+    body.menu-open .menu-scrim {
+      background: rgba(20,8,4,0.42);
+      pointer-events: auto;
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+       NARRATIVE — SOBER, MINIMALIST, TYPOGRAPHIC
+       Single centred column. Long-form reading.
+       No images, no snap, no accordions. Just text and space.
+       ───────────────────────────────────────────────────────────── */
+    main.narrative {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 22vh 6vw 18vh;
+      width: 100%;
+    }
+
+    /* Top-of-page opening — three quiet lines, then the key sentence */
+    .opening {
+      width: 100%;
+      max-width: 640px;
+      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3.2vh;
+      margin-bottom: 24vh;
+    }
+    .opening-eyebrow {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(9px, 0.72vw, 11px);
+      font-weight: 500;
+      letter-spacing: 0.44em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.85);
+      animation: fadeInSoft 1.4s cubic-bezier(0.25,0.1,0.25,1) 0.2s both,
+                 neonBreathSoft 6s ease-in-out 0.2s infinite;
+      margin-bottom: 1.2vh;
+    }
+    .opening-totems {
+      display: flex; flex-direction: column; gap: 1.2vh;
+    }
+    .opening-totems span {
+      font-family: 'Italiana', serif;
+      font-size: clamp(24px, 2.4vw, 42px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      color: rgba(255,255,255,0.94);
+      opacity: 0;
+      animation: fadeIn 1.6s cubic-bezier(0.25,0.1,0.25,1) forwards;
+    }
+    .opening-totems span:nth-child(1) { animation-delay: 0.5s; }
+    .opening-totems span:nth-child(2) { animation-delay: 1.0s; }
+    .opening-totems span:nth-child(3) { animation-delay: 1.5s; }
+    .opening-key {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(14px, 1.1vw, 18px);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.85);
+      max-width: 28em;
+      opacity: 0;
+      animation: fadeIn 1.8s cubic-bezier(0.25,0.1,0.25,1) 2.2s forwards;
+      margin-top: 1.6vh;
+    }
+
+    /* Section container — max 640px reading column, single column */
+    section.n-section {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 10vh 0;
+    }
+    section.n-section + section.n-section {
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Eyebrow + title */
+    .n-eyebrow {
+      display: block;
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(9px, 0.72vw, 11px);
+      font-weight: 500;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.85);
+      margin-bottom: 3vh;
+    }
+    .n-title {
+      font-family: 'Italiana', serif;
+      font-size: clamp(28px, 2.6vw, 46px);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1.15;
+      color: #fff;
+      margin-bottom: 5vh;
+    }
+    .n-subtitle {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(11px, 0.82vw, 13px);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-top: -3.5vh;
+      margin-bottom: 5vh;
+    }
+
+    /* Prose */
+    .n-prose {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: clamp(14px, 1vw, 17px);
+      letter-spacing: 0.005em;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.88);
+    }
+    .n-prose p { margin: 0 0 1.4em; }
+    .n-prose p:last-child { margin-bottom: 0; }
+    .n-prose em {
+      font-style: italic;
+      color: rgba(255,240,220,1);
+    }
+    .n-prose strong {
+      font-weight: 500;
+      color: #fff;
+    }
+
+    /* Founder split — name left, role right (minimal) */
+    .founder-head {
+      margin-bottom: 4vh;
+    }
+    .founder-head .n-title { margin-bottom: 1.2vh; }
+    .founder-role {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(11px, 0.82vw, 13px);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.85);
+    }
+
+    /* Closing block — back to centre, understated */
+    .n-close {
+      width: 100%;
+      max-width: 640px;
+      margin: 14vh auto 0;
+      padding-top: 12vh;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+    .n-close p {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(14px, 1.1vw, 18px);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Footer minimal */
+    footer.n-footer {
+      position: relative;
+      z-index: 3;
+      padding: 8vh 6vw 6vh;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 12vh;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(9px, 0.66vw, 11px);
+      font-weight: 300;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2em;
+      flex-wrap: wrap;
+    }
+    footer.n-footer a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    footer.n-footer a:hover { color: rgba(255,235,210,1); }
+  </style>
+</head>
+<body>
+  <canvas id="c-grad"></canvas>
+  <canvas id="c-grain"></canvas>
+  <div class="vignette"></div>
+
+  <a class="brand-mark" href="/" aria-label="Samma — back to home">
+    <img class="brand-logo"
+         src="logo/Samma logo pack/Digital (RGB)/Samma_Logo_RGB_White.svg"
+         alt="Samma">
+    <span class="brand-location">Geneva</span>
+  </a>
+
+  <header class="topbar-right">
+    <div class="topnav-social" aria-label="Samma on social media">
+      <a href="https://instagram.com/samma.geneva" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="https://facebook.com/samma.geneva" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14.5 21v-7h2.4l.35-2.85h-2.75V9.3c0-.8.25-1.35 1.4-1.35h1.5V5.4a20.3 20.3 0 0 0-2.15-.1c-2.15 0-3.6 1.3-3.6 3.7v2.15H9.3V14h2.35v7z"/>
+        </svg>
+      </a>
+    </div>
+    <a class="cta cta-book" href="#book">
+      <span>Book a session</span>
+      <span class="arrow">&rarr;</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menuPanel">
+      <span class="menu-bars" aria-hidden="true">
+        <span class="bar bar-1"></span>
+        <span class="bar bar-2"></span>
+        <span class="bar bar-3"></span>
+      </span>
+    </button>
+  </header>
+
+  <aside class="menu-panel" id="menuPanel" aria-hidden="true">
+    <nav class="menu-nav">
+      <ul class="menu-list">
+        <li><a href="/" data-menu-item>Home</a></li>
+        <li><a href="/practices" data-menu-item>Practices</a></li>
+        <li><a href="/offer" data-menu-item>Offer</a></li>
+        <li><a href="/booking" data-menu-item>Booking</a></li>
+        <li><a href="/narrative.html" class="is-current" data-menu-item>Narrative</a></li>
+      </ul>
+    </nav>
+    <div class="menu-foot">
+      <a href="mailto:bookings@samma.ch">bookings@samma.ch</a>
+      <a href="tel:+41220000000">+41 22 000 00 00</a>
+      <span>12 Rue du Rh&ocirc;ne, 1202 Geneva</span>
+      <div class="menu-foot-social" aria-label="Samma on social media">
+        <a href="https://instagram.com/samma.geneva" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a href="https://facebook.com/samma.geneva" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14.5 21v-7h2.4l.35-2.85h-2.75V9.3c0-.8.25-1.35 1.4-1.35h1.5V5.4a20.3 20.3 0 0 0-2.15-.1c-2.15 0-3.6 1.3-3.6 3.7v2.15H9.3V14h2.35v7z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+  <div class="menu-scrim" id="menuScrim" aria-hidden="true"></div>
+
+  <main class="narrative">
+
+    <!-- Opening — three words + the key sentence -->
+    <div class="opening">
+      <span class="opening-eyebrow">Our Narrative</span>
+      <div class="opening-totems">
+        <span>Mountains</span>
+        <span>Chinese medicine</span>
+        <span>Modern science</span>
+      </div>
+      <p class="opening-key">Samma was created at the meeting point of these worlds.</p>
+    </div>
+
+    <!-- Genealogy -->
+    <section class="n-section">
+      <span class="n-eyebrow">Genealogy</span>
+      <h2 class="n-title">Where Samma comes from</h2>
+      <div class="n-prose">
+        <p>There are places that call something deeper out of us — places that lift the weight from the mind, widen the breath, and remind us of what it feels like to be fully alive. For thousands of years, people seeking clarity, strength, and balance have turned to the mountains. Across civilizations, mountains have represented a place of transformation — where the air is clearer, the mind becomes quiet, and the body reconnects with the deeper rhythms of life.</p>
+
+        <p>In ancient China, mountains were places of cultivation. Scholars, physicians, and monks withdrew into these landscapes to observe the rhythms of the body and the movements of the natural world. From these observations emerged a profound understanding: that health arises from balance within the body and harmony with the forces that surround it. From this wisdom grew the foundations of Chinese medicine.</p>
+
+        <p>In the modern West, medicine followed another path — developing extraordinary tools to measure, analyze, and enhance the human body with remarkable precision.</p>
+
+        <p>Two traditions. Two ways of understanding human vitality.</p>
+
+        <p><em>S A M M A was created at the meeting point of these worlds.</em></p>
+
+        <p>Here, the wisdom of ancient Chinese health philosophy meets the precision of contemporary Western diagnostics and performance science.</p>
+
+        <p>Our approach is simple. First, we understand the body. Then we restore balance. Finally, we help you rise toward your natural peak.</p>
+
+        <p>The elevated <strong>M</strong> in our name represents that moment of ascent — the point where balance becomes strength, clarity, and vitality. A mountain. A summit. A reminder that when the body is understood and supported properly, it is capable of extraordinary states of wellbeing.</p>
+
+        <p>The name <em>Samma</em> is drawn from the Pali word <em>sammā</em> — meaning <em>rightly, properly, in the truest sense</em>. It reflects a philosophy of health approached with clarity, balance, and genuine respect for the whole human being.</p>
+      </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section class="n-section">
+      <span class="n-eyebrow">Philosophy</span>
+      <h2 class="n-title">What we believe</h2>
+      <div class="n-prose">
+        <p>At Samma, we believe health is more than the absence of illness. It is a state of balance, vitality, clarity, and inner coherence — a quality of life that can be cultivated, not merely recovered.</p>
+
+        <p>We believe the human being must be approached as a whole. The body cannot be separated from the mind, nor physical symptoms from the emotional, psychological, and environmental patterns that shape them. Genuine care begins by seeing the person in their full complexity.</p>
+
+        <p>We believe the highest expression of medicine is not only to treat illness, but to recognise imbalance early — and to restore the conditions in which health can return of its own accord.</p>
+
+        <p>We believe nature is one of the most reliable guides to human health. The body lives in constant relationship with the rhythms of the natural world — with light and darkness, activity and rest, warmth and cold, the changing seasons. In Chinese medicine, health depends on our capacity to remain in harmony with these movements. Illness can arise when that adaptability is lost, and the body is no longer able to respond with balance and resilience to change. For this reason, Chinese medicine is not only concerned with symptoms, but with restoring the body's deeper capacity to regulate, adapt, and return to equilibrium.</p>
+
+        <p>We believe ancient wisdom and modern science are not opposing worlds, but complementary ways of understanding human health. One offers depth, pattern recognition, and a refined understanding of balance. The other offers precision, measurability, and powerful tools for clinical insight. At Samma, both have their place — and neither is sacrificed for the other.</p>
+
+        <p>We believe the environment of care matters. Beauty, calm, and sensory harmony are not secondary to healing — they are part of it. The spaces we inhabit shape how we breathe, how the nervous system responds, and how the body begins to soften and restore.</p>
+
+        <p>Our aim is not only to relieve symptoms, but to rebuild the internal conditions in which health, resilience, and a deeper sense of wellbeing can take root.</p>
+      </div>
+    </section>
+
+    <!-- Founders — intro -->
+    <section class="n-section">
+      <span class="n-eyebrow">Founders</span>
+      <h2 class="n-title">Two paths, one intention</h2>
+      <div class="n-prose">
+        <p>Samma was born from the meeting of two women who found each other through the world of healing. Both practitioners of Chinese medicine, and both shaped by a shared contemplative path, they recognised in one another the same intention: to create a place where health is approached with greater depth, greater rigour, and greater humanity.</p>
+
+        <p>What brought them together was not only a shared profession, but a shared understanding — that healing is never purely physical, never purely mental, and never purely technical. It requires precision, but also presence. Knowledge, but also careful listening. Clinical expertise, but also an environment in which a person can genuinely begin to restore.</p>
+
+        <p>From this shared vision, Samma took form — not simply as a clinic, but as the expression of a deeper philosophy of care.</p>
+      </div>
+    </section>
+
+    <!-- Oana Budica -->
+    <section class="n-section">
+      <div class="founder-head">
+        <span class="n-eyebrow">Co-Founder</span>
+        <h2 class="n-title">Oana Budica</h2>
+        <div class="founder-role">Chinese Medicine Clinician</div>
+      </div>
+      <div class="n-prose">
+        <p>Oana Budica is a classical Chinese medicine clinician specialising in internal medicine, with a practice centred on acupuncture, herbal medicine, and meditation. Her work addresses complex, chronic, and functional conditions — including autoimmune disease, digestive disorders, burnout, fatigue, sleep disturbance, emotional dysregulation, and immune-related patterns — oriented not only toward the relief of symptoms, but toward the long-term restoration of regulation, resilience, and sustainable health.</p>
+
+        <p>Her clinical formation spans more than a decade of study and practice across China, Taiwan, South Korea, and Japan. She trained in acupuncture under leading physicians across these traditions before undertaking a Bachelor's degree in Traditional Chinese Medicine at Shanghai University of TCM, where she trained across the specialist departments of Yueyang Hospital — one of China's foremost clinical teaching institutions. She holds the Diploma in Canonical Chinese Medicine® from the ICEAM — the Institute of Classics in East Asian Medicine — a rigorous post-graduate lineage training in classical Chinese herbal medicine, employing advanced pulse and abdominal diagnosis to address even the most complex clinical presentations. She is the only ICEAM diplomate in French-speaking Switzerland.</p>
+
+        <p>Her areas of clinical expertise include autoimmune conditions — among them lupus, rheumatoid arthritis, multiple sclerosis, Hashimoto's thyroiditis, Sjögren's syndrome, and atopic dermatitis — alongside gastrointestinal disorders, burnout and chronic stress, endocrinological and gynaecological conditions including PCOS, endometriosis, and infertility, cardiovascular patterns, sleep disorders, and ENT conditions. Her approach to each is rooted in the same principle: that lasting change requires understanding the whole person, not only the presenting condition.</p>
+
+        <p>Parallel to her clinical life, Oana has pursued a serious and sustained contemplative path within the Theravāda Buddhist tradition. She trained at Dipabhavan Meditation Center and Wat Suan Mokkh in Thailand, rooted in the forest tradition of Ajahn Buddhadāsa, cultivating mindfulness and insight meditation. She undertook two full rainy-season retreats — the traditional <em>vassa</em> — at Pa Auk Tawya Monastery in Myanmar, training directly under Pa Auk Sayadaw in deep concentration and the Jhanas — a practice she has sustained and deepened over more than a decade. Alongside intensive retreat, she undertook formal studies in Abhidhamma and Pali language under Professor Nandamālā Bhivamsa at the Institute for Dhamma Education in Myanmar, as well as extended periods in ashrams in India — a foundation that has allowed her to engage directly with the original suttas and to approach the transmission of Dharma with both rigour and authenticity.</p>
+
+        <p>This dual formation — as a clinician of rare technical depth and as a practitioner shaped by years of genuine contemplative training — defines Oana's presence at Samma. Her medicine is precise. Her listening is unhurried. And her understanding of what it means for a human being to truly restore is drawn from both the consulting room and years of serious practice in the world's most demanding meditation traditions.</p>
+      </div>
+    </section>
+
+    <!-- Joëlle Nicolet -->
+    <section class="n-section">
+      <div class="founder-head">
+        <span class="n-eyebrow">Co-Founder</span>
+        <h2 class="n-title">Joëlle Nicolet</h2>
+        <div class="founder-role">Chinese Medicine Clinician</div>
+      </div>
+      <div class="n-prose">
+        <p>Joëlle Nicolet is a Chinese medicine clinician specialising in acupuncture, with a practice oriented toward the restoration of balance across the full spectrum of physical, psycho-emotional, and functional health. She trained at the Liang Shen Institute in Geneva and completed part of her clinical formation at the Shanghai Hospital of Traditional Chinese Medicine — bringing both the rigour of classical theory and direct hospital-based clinical experience to her work.</p>
+
+        <p>Her areas of clinical focus include musculoskeletal and pain conditions — among them chronic pain, joint disorders, cervical and lumbar syndromes, and tension-related presentations — alongside psycho-emotional conditions such as anxiety, depression, emotional dysregulation, and stress-related illness. She works with women's health across all stages of life, including menstrual disorders, PCOS, endometriosis, fertility support, and the hormonal transitions of perimenopause and menopause. Nervous system regulation and burnout recovery are central threads throughout her practice — conditions in which she understands the body, the emotions, and the lived environment to be inseparable.</p>
+
+        <p>Before dedicating herself to this path, Joëlle spent over fifteen years in strategic marketing and project development across Switzerland, working in tourism, hospitality, and industry. That professional formation gave her a rare ability to translate vision into structure — a capacity that now serves both the clinical design of Samma and its broader development as an institution.</p>
+
+        <p>Over time, a different kind of inquiry began to take shape alongside her professional life — a growing desire to understand what genuinely sustains vitality, clarity, and inner alignment. This led her to step beyond a conventional career and engage with health and human experience from a more embodied perspective.</p>
+
+        <p>Her path brought her through extended time in India, where the study of Dharma became a lasting presence in her life — not as philosophy at a distance, but as a lived practice, an art of engaging with reality that continues to inform both her personal orientation and her clinical work.</p>
+
+        <p>Her exploration of the human mind extended further into community-based experiences and training in psycho-emotional and somatic approaches, deepening her understanding of how individuals experience, express, and transform internal states. This breadth — across the strategic, the clinical, the contemplative, and the somatic — is what gives her practice its particular quality: attentive to the body, alive to the inner life, and grounded in a genuine understanding of what it takes for a person to change.</p>
+
+        <p>Her work is guided by a clear intention: to help people reconnect with their vitality, restore clarity, and experience health not as the absence of illness, but as a state of genuine alignment and presence.</p>
+      </div>
+    </section>
+
+    <!-- Who We Care For -->
+    <section class="n-section">
+      <span class="n-eyebrow">Who we care for</span>
+      <h2 class="n-title">For those seeking a more complete approach</h2>
+      <div class="n-prose">
+        <p>Samma is for those seeking a more complete approach to health — whether navigating complex illness, restoring balance after a period of sustained strain, or investing thoughtfully in long-term vitality.</p>
+
+        <p>We care for people living with chronic, multifactorial, or demanding health concerns, and for those seeking integrative support alongside a broader medical path. Our approach rests on the understanding that a person is never reducible to a diagnosis — but a whole human being whose health must be seen in its full context.</p>
+
+        <p>We also care for those experiencing the earlier signs of imbalance: stress, burnout, anxiety, fatigue, digestive or hormonal disruption, disturbed sleep, lowered resilience. And for those who wish to address these patterns before they deepen into something more difficult to resolve.</p>
+
+        <p>Samma is equally for those who are not unwell, but who sense that their health, energy, and clarity could be cultivated more intelligently — through prevention, restoration, and a more informed relationship with the body.</p>
+
+        <p>Whether one comes to heal, to recover, to prevent, or to strengthen, Samma offers a more refined and whole-person approach to care.</p>
+      </div>
+    </section>
+
+    <!-- Quiet close -->
+    <div class="n-close">
+      <p>Rightly. Properly. In the truest sense.</p>
+    </div>
+
+  </main>
+
+  <footer class="n-footer">
+    <span>&copy; Samma — Geneva</span>
+    <span><a href="mailto:bookings@samma.ch">bookings@samma.ch</a></span>
+  </footer>
+
+  <script>
+    /* ── Palette ── */
+    const P = {
+      glow:  [210,168,135],
+      warm:  [185,135,100],
+      mid:   [160, 90, 60],
+      queen: [122, 65, 48],
+      dark:  [ 48, 20, 12],
+      shadow:[ 52, 22, 14]
+    };
+    const rgba = (c,a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+    const gc  = document.getElementById('c-grad');
+    const ctx = gc.getContext('2d');
+    let W = 0, H = 0;
+    function resizeGrad() {
+      const dpr = window.devicePixelRatio || 1;
+      W = window.innerWidth; H = window.innerHeight;
+      gc.width  = W * dpr; gc.height = H * dpr;
+      gc.style.width  = W + 'px'; gc.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function blob(cx, cy, r, color, alpha) {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0,    rgba(color, alpha));
+      g.addColorStop(0.25, rgba(color, alpha * 0.78));
+      g.addColorStop(0.50, rgba(color, alpha * 0.42));
+      g.addColorStop(0.75, rgba(color, alpha * 0.12));
+      g.addColorStop(1,    rgba(color, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+    const CYCLE = 28, AMP = 0.22;
+    function drift(t, f1, p1, f2, p2) {
+      return AMP * (0.65 * Math.sin((t / CYCLE) * Math.PI * 2 * f1 + p1)
+                  + 0.35 * Math.sin((t / CYCLE) * Math.PI * 2 * f2 + p2));
+    }
+    const BT = [
+      {rx:.28,ry:.48,rr:.38,c:P.glow,  a:.60, xf1:1,  xp1:0,   xf2:.4, xp2:3.8, yf1:.7, yp1:1.5, yf2:.3, yp2:5.2},
+      {rx:.55,ry:.12,rr:.34,c:P.warm,  a:.52, xf1:.6, xp1:2.8, xf2:.35,xp2:.9,  yf1:.9, yp1:.4,  yf2:.5, yp2:4.1},
+      {rx:.78,ry:.75,rr:.32,c:P.warm,  a:.48, xf1:.8, xp1:1.2, xf2:.45,xp2:5.5, yf1:1.1,yp1:3.5, yf2:.3, yp2:1  },
+      {rx:.92,ry:.55,rr:.30,c:P.mid,   a:.42, xf1:.5, xp1:.8,  xf2:.6, xp2:2.9, yf1:1.3,yp1:2.2, yf2:.4, yp2:4.8},
+      {rx:.72,ry:.38,rr:.33,c:P.dark,  a:.45, xf1:.9, xp1:3,   xf2:.55,xp2:1.6, yf1:.6, yp1:1.8, yf2:.35,yp2:5  },
+      {rx:.08,ry:.15,rr:.35,c:P.shadow,a:.44, xf1:.7, xp1:2.4, xf2:.5, xp2:.3,  yf1:1,  yp1:.6,  yf2:.4, yp2:3.4},
+      {rx:.45,ry:.92,rr:.36,c:P.dark,  a:.42, xf1:1.2,xp1:1,   xf2:.3, xp2:4.5, yf1:.5, yp1:3.2, yf2:.6, yp2:1.3},
+      {rx:.38,ry:.30,rr:.26,c:P.glow,  a:.50, xf1:1.4,xp1:.2,  xf2:.45,xp2:3,   yf1:.8, yp1:2.6, yf2:.5, yp2:5.8},
+      {rx:.18,ry:.65,rr:.30,c:P.glow,  a:.55, xf1:.9, xp1:1.8, xf2:.5, xp2:4.2, yf1:1.1,yp1:0.8, yf2:.4, yp2:3.6},
+      {rx:.65,ry:.50,rr:.28,c:P.warm,  a:.50, xf1:1.1,xp1:3.5, xf2:.6, xp2:1.4, yf1:.7, yp1:2.8, yf2:.45,yp2:5.5}
+    ];
+    let mX = 0, mY = 0, tmX = 0, tmY = 0;
+    document.addEventListener('mousemove', e => { tmX = e.clientX; tmY = e.clientY; });
+
+    /* Narrative scrolls natively — parallax reads window.scrollY */
+    function drawGradient(t) {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const docH = Math.max(document.documentElement.scrollHeight, H);
+      const sections = Math.ceil(docH / H) + 1;
+      const D = Math.max(W, H);
+      const breathR = 1 + 0.14 * Math.sin(t / 12 * Math.PI * 2);
+      mX += (tmX - mX) * 0.04;
+      mY += (tmY - mY) * 0.04;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = rgba(P.queen, 1);
+      ctx.fillRect(0, 0, W, H);
+      const parallax = 0.42;
+      for (let s = 0; s < sections; s++) {
+        const sOff = (s % 2 === 0) ? 0 : 0.12;
+        const aVar = 1 + 0.12 * Math.sin(s * 1.7 + 0.5);
+        for (let i = 0; i < BT.length; i++) {
+          const b = BT[i];
+          const docX = W * (b.rx + sOff * (b.rx > 0.5 ? -1 : 1))
+                     + W * drift(t, b.xf1, b.xp1 + s * 0.7, b.xf2, b.xp2 + s * 1.3);
+          const docY = s * H + H * b.ry
+                     + H * drift(t, b.yf1, b.yp1 + s * 0.5, b.yf2, b.yp2 + s * 0.9);
+          const screenY = docY - scrollY * parallax;
+          const r = D * b.rr * breathR;
+          if (screenY < -r * 1.5 || screenY > H + r * 1.5) continue;
+          blob(docX, screenY, r, b.c, b.a * aVar);
+        }
+      }
+    }
+
+    const gnc = document.getElementById('c-grain');
+    const gnx = gnc.getContext('2d');
+    let grainImg, grainW, grainH;
+    function resizeGrain() {
+      grainW = window.innerWidth;
+      grainH = window.innerHeight;
+      gnc.width = grainW; gnc.height = grainH;
+      grainImg  = gnx.createImageData(grainW, grainH);
+    }
+    function drawGrain() {
+      const d = grainImg.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (Math.random() > 0.38) {
+          d[i] = d[i+1] = d[i+2] = 128;
+        } else {
+          const v = (Math.random() * 2 - 1) * 60;
+          d[i]   = Math.round(128 + v * 1.12);
+          d[i+1] = Math.round(128 + v * 0.88);
+          d[i+2] = Math.round(128 + v * 0.62);
+        }
+        d[i+3] = 255;
+      }
+      gnx.putImageData(grainImg, 0, 0);
+    }
+    let lastGrainTime = 0;
+    const GRAIN_INTERVAL = 100;
+    let t0 = null;
+    function loop(ts) {
+      requestAnimationFrame(loop);
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000;
+      drawGradient(elapsed);
+      if (ts - lastGrainTime > GRAIN_INTERVAL) { drawGrain(); lastGrainTime = ts; }
+    }
+    function init() { resizeGrad(); resizeGrain(); drawGrain(); }
+    init();
+    window.addEventListener('resize', init);
+    requestAnimationFrame(loop);
+
+    /* Menu */
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel  = document.getElementById('menuPanel');
+    const menuScrim  = document.getElementById('menuScrim');
+    function openMenu() {
+      document.body.classList.add('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuToggle.setAttribute('aria-label', 'Close menu');
+      menuPanel.setAttribute('aria-hidden', 'false');
+    }
+    function closeMenu() {
+      document.body.classList.remove('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open menu');
+      menuPanel.setAttribute('aria-hidden', 'true');
+    }
+    function toggleMenu() {
+      if (document.body.classList.contains('menu-open')) closeMenu(); else openMenu();
+    }
+    menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+    menuScrim.addEventListener('click', closeMenu);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) closeMenu();
+    });
+    document.querySelectorAll('[data-menu-item]').forEach(link => {
+      link.addEventListener('click', () => closeMenu());
+    });
+  </script>
+</body>
+</html>

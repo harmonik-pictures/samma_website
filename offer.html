@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offer — Samma</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Outfit:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #723D2E; color: #fff; }
+    body { overflow: hidden; display: flex; flex-direction: column; }
+
+    /* Background layers */
+    #c-grad   { position: fixed; inset: 0; display: block; filter: blur(75px); transform: scale(1.18); transform-origin: center; z-index: 0; }
+    #c-grain  { position: fixed; inset: 0; display: block; pointer-events: none; mix-blend-mode: soft-light; opacity: 0.40; z-index: 1; }
+    .vignette { position: fixed; inset: 0; pointer-events: none; z-index: 2;
+                background: radial-gradient(ellipse 140% 140% at 22% 22%, transparent 35%, rgba(35,14,6,0.32) 100%); }
+
+    /* Glow keyframes */
+    @keyframes neonBreath {
+      0%, 100% { text-shadow: 0 0 4px rgba(255,225,195,0.60), 0 0 12px rgba(255,215,175,0.45), 0 0 28px rgba(240,190,150,0.28), 0 0 50px rgba(220,170,130,0.14), 0 0 80px rgba(210,160,120,0.06); }
+      50%      { text-shadow: 0 0 6px rgba(255,230,200,0.85), 0 0 18px rgba(255,220,185,0.62), 0 0 38px rgba(245,198,158,0.40), 0 0 70px rgba(228,178,138,0.22), 0 0 100px rgba(210,160,120,0.10); }
+    }
+    @keyframes neonBreathSoft {
+      0%, 100% { text-shadow: 0 0 3px rgba(255,225,195,0.50), 0 0 8px rgba(255,215,175,0.35), 0 0 22px rgba(240,190,150,0.20), 0 0 42px rgba(220,170,130,0.10); }
+      50%      { text-shadow: 0 0 5px rgba(255,230,200,0.72), 0 0 14px rgba(255,220,185,0.50), 0 0 30px rgba(245,198,158,0.32), 0 0 58px rgba(228,178,138,0.16); }
+    }
+    @keyframes logoBreath {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 12px rgba(255,235,210,1.00))
+          drop-shadow(0 0 30px rgba(255,225,190,0.82))
+          drop-shadow(0 0 62px rgba(248,205,165,0.58))
+          drop-shadow(0 0 105px rgba(232,182,142,0.38))
+          drop-shadow(0 0 170px rgba(215,165,125,0.22));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 18px rgba(255,240,220,1))
+          drop-shadow(0 0 42px rgba(255,232,205,1))
+          drop-shadow(0 0 82px rgba(252,215,178,0.80))
+          drop-shadow(0 0 135px rgba(238,194,154,0.54))
+          drop-shadow(0 0 210px rgba(220,172,130,0.32));
+      }
+    }
+    @keyframes fadeIn     { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInSoft { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 0.92; transform: translateY(0); } }
+
+    /* Logo top-left */
+    .brand-mark {
+      position: fixed;
+      top: 3.2vh; left: 3.2vw;
+      z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.45em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.35s ease;
+    }
+    .brand-mark:hover { opacity: 0.82; }
+    .brand-logo {
+      width: clamp(60px, 5.5vw, 90px);
+      height: auto; display: block;
+      animation: logoBreath 6s ease-in-out infinite;
+    }
+    .brand-location {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(6.8px, 0.51vw, 8.5px);
+      font-weight: 300;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      padding-left: 0.42em;
+    }
+
+    /* Topbar right */
+    .topbar-right {
+      position: fixed;
+      top: 3.2vh; right: 3.2vw;
+      z-index: 70;
+      display: flex; align-items: center;
+      gap: clamp(14px, 1.3vw, 22px);
+    }
+    .topnav-social { display: flex; align-items: center; gap: clamp(8px, 0.7vw, 12px); }
+    .topnav-social a {
+      color: rgba(255,255,255,0.75);
+      display: inline-flex; align-items: center; justify-content: center;
+      width: clamp(26px, 2vw, 32px);
+      height: clamp(26px, 2vw, 32px);
+      border-radius: 50%;
+      transition: color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .topnav-social a:hover { color: #fff; transform: translateY(-1px); }
+    .topnav-social svg { display: block; width: 60%; height: 60%; }
+
+    .cta {
+      display: inline-flex; align-items: center; gap: 0.9em;
+      padding: 0.85em 1.8em;
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(7px, 0.55vw, 9px);
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 999px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: none;
+    }
+    .cta:hover { background: #fff; color: #723D2E; border-color: #723D2E; transition: none; }
+    .cta .arrow { display: inline-block; transition: none; }
+    .cta:hover .arrow { transform: translateX(3px); }
+    .cta.cta-book {
+      padding: 0.75em 1.5em;
+      font-size: clamp(8px, 0.62vw, 10.5px);
+      letter-spacing: 0.22em;
+      transition: none;
+    }
+    body.menu-open .topnav-social { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+
+    /* Menu button */
+    .menu-toggle {
+      position: relative; z-index: 1;
+      width: clamp(32px, 2.6vw, 42px);
+      height: clamp(32px, 2.6vw, 42px);
+      padding: 0; background: transparent; border: 0;
+      cursor: pointer; display: grid; place-items: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-bars {
+      position: relative;
+      width: clamp(20px, 1.55vw, 26px);
+      height: clamp(16px, 1.25vw, 22px);
+      display: block;
+      filter: drop-shadow(0 0 4px rgba(255,225,195,0.22));
+      transition: filter 0.4s ease;
+    }
+    .menu-toggle:hover .menu-bars { filter: drop-shadow(0 0 8px rgba(255,225,195,0.45)); }
+    .bar {
+      position: absolute; left: 0; height: 1px;
+      background: rgba(255,255,255,0.9);
+      transform-origin: 50% 50%;
+      transition: width 0.45s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.45s cubic-bezier(0.22,1,0.36,1),
+                  top 0.45s cubic-bezier(0.22,1,0.36,1),
+                  opacity 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .bar-1 { top: 0;    width: 75%; }
+    .bar-2 { top: 50%;  width: 92%; transform: translateY(-50%); }
+    .bar-3 { top: 100%; width: 58%; transform: translateY(-100%); }
+    .menu-toggle:hover .bar-1, .menu-toggle:hover .bar-3 { width: 92%; }
+    .menu-toggle:hover .bar { background: rgba(255,245,225,1); }
+    body.menu-open .menu-toggle .bar-1 { top: 50%; width: 92%; transform: translateY(-50%) rotate(-45deg); }
+    body.menu-open .menu-toggle .bar-2 { width: 0; opacity: 0; transform: translateY(-50%) scaleX(0); }
+    body.menu-open .menu-toggle .bar-3 { top: 50%; width: 92%; transform: translateY(-50%) rotate(45deg); }
+
+    /* Sidebar */
+    .menu-panel {
+      position: fixed; top: 0; right: 0;
+      width: min(17vw, 245px); height: 100vh;
+      z-index: 65;
+      background: rgba(48,20,12,0.94);
+      backdrop-filter: blur(18px) saturate(1.05);
+      -webkit-backdrop-filter: blur(18px) saturate(1.05);
+      border-left: 1px solid rgba(255,255,255,0.06);
+      padding: 14vh 2.2vw 6vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-start; align-items: flex-start;
+      gap: 3.2vh;
+      transform: translateX(100%);
+      transition: transform 0.7s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+    body.menu-open .menu-panel { transform: translateX(0); pointer-events: auto; }
+    @media (max-width: 720px) { .menu-panel { width: 100vw; padding-left: 8vw; padding-right: 8vw; } }
+    .menu-nav { display: flex; width: 100%; }
+    .menu-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column;
+      align-items: flex-start; gap: 1.6vh;
+    }
+    .menu-list a {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(11px, 0.82vw, 14px);
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      padding: 0.35em 0;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .menu-list a::after {
+      content: ''; position: absolute; left: 0; bottom: 0;
+      width: 0; height: 1px;
+      background: rgba(255,235,210,0.85);
+      transition: width 0.45s cubic-bezier(0.22,1,0.36,1);
+    }
+    body.menu-open .menu-list a:hover { opacity: 0.6; }
+    body.menu-open .menu-list a:hover::after { width: 1.3em; }
+    .menu-list a.is-current { color: rgba(255,235,210,1); }
+    .menu-list a.is-current::after { width: 1.3em; }
+    body.menu-open .menu-list a { opacity: 1; transform: translateY(0); }
+    body.menu-open .menu-list li:nth-child(1) a { transition-delay: 0.18s; }
+    body.menu-open .menu-list li:nth-child(2) a { transition-delay: 0.24s; }
+    body.menu-open .menu-list li:nth-child(3) a { transition-delay: 0.30s; }
+    body.menu-open .menu-list li:nth-child(4) a { transition-delay: 0.36s; }
+    body.menu-open .menu-list li:nth-child(5) a { transition-delay: 0.42s; }
+
+    .menu-foot {
+      display: flex; flex-direction: column;
+      align-items: flex-start; text-align: left;
+      gap: 0.25em; margin-top: auto;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(9px, 0.66vw, 11px);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      opacity: 0; transform: translateY(6px);
+      transition: opacity 0.5s ease 0.55s, transform 0.5s ease 0.55s;
+    }
+    .menu-foot a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
+    .menu-foot a:hover { color: rgba(255,235,210,1); }
+    body.menu-open .menu-foot { opacity: 1; transform: translateY(0); }
+    .menu-foot-social {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 1.6em; padding-top: 1.4em;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .menu-foot-social a {
+      width: 26px; height: 26px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: rgba(255,255,255,0.62);
+      transition: color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    .menu-foot-social a:hover { color: rgba(255,235,210,1); transform: translateY(-1px); }
+    .menu-foot-social svg { display: block; }
+
+    .menu-scrim {
+      position: fixed; inset: 0; z-index: 62;
+      background: rgba(20,8,4,0);
+      pointer-events: none;
+      transition: background-color 0.55s ease;
+    }
+    body.menu-open .menu-scrim {
+      background: rgba(20,8,4,0.42);
+      pointer-events: auto;
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+       OFFER — SINGLE-VIEWPORT, LIGHT CARDS
+       ───────────────────────────────────────────────────────────── */
+    main.offer {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10vh 4vw 2vh;
+    }
+
+    /* Discreet footer — tucked at the bottom, same info as panel 3 of Home */
+    footer.o-footer {
+      position: relative; z-index: 3;
+      flex-shrink: 0;
+      padding: 1.8vh 3.2vw 2.2vh;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2vw;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(9px, 0.66vw, 11px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.68);
+    }
+    .o-footer-cols {
+      display: flex;
+      gap: clamp(18px, 2.6vw, 46px);
+      flex-wrap: wrap;
+    }
+    .o-footer-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15em;
+    }
+    .o-footer-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(7.5px, 0.56vw, 9.5px);
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.80);
+      margin-bottom: 0.25em;
+    }
+    .o-footer-col a,
+    .o-footer-col p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(9px, 0.68vw, 11.5px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.78);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .o-footer-col a:hover { color: rgba(255,235,210,1); }
+    .o-footer-legal {
+      display: flex;
+      gap: 1.6em;
+      font-size: clamp(8px, 0.6vw, 10px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      flex-shrink: 0;
+    }
+    .o-footer-legal a { color: inherit; text-decoration: none; transition: color 0.3s ease; }
+    .o-footer-legal a:hover { color: rgba(255,235,210,1); }
+    @media (max-width: 980px) {
+      footer.o-footer { flex-direction: column; align-items: flex-start; gap: 1.2vh; }
+    }
+
+    /* ──────────────────────────────────────────────
+       Editorial triptych — no boxes, hairline rules
+       ────────────────────────────────────────────── */
+    .formulas {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      width: 100%;
+      max-width: 1520px;
+    }
+    @media (max-width: 1100px) {
+      .formulas { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 720px) {
+      .formulas { grid-template-columns: 1fr; }
+    }
+
+    .formula-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 2vh 2.2vw;
+      background: transparent;
+      border: 0;
+      opacity: 0;
+      animation: fadeIn 1.6s cubic-bezier(0.25,0.1,0.25,1) forwards;
+    }
+    .formula-card:nth-child(1) { animation-delay: 0.45s; }
+    .formula-card:nth-child(2) { animation-delay: 0.65s; }
+    .formula-card:nth-child(3) { animation-delay: 0.85s; }
+    .formula-card:nth-child(4) { animation-delay: 1.05s; }
+    /* Crisp hairline rule between columns */
+    .formula-card + .formula-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 1px;
+      background: rgba(255,240,220,0.35);
+    }
+
+    .formula-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(13px, 1vw, 16px);
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #fff;
+      margin: 0 0 2.4vh 0;
+      animation: neonBreathSoft 6s ease-in-out infinite;
+    }
+    .formula-name::after {
+      content: '';
+      display: block;
+      width: 26px;
+      height: 1px;
+      background: rgba(210,168,135,0.55);
+      margin-top: 2vh;
+    }
+
+    /* Shared body wrapper — cross-fade between description and pricing.
+       Reserves enough vertical space so card size never shifts on toggle. */
+    .formula-body {
+      position: relative;
+      flex: 1;
+      min-height: 38vh;
+      margin-bottom: 1.4vh;
+      overflow: hidden;
+    }
+    .formula-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: clamp(12px, 0.86vw, 14.5px);
+      line-height: 1.62;
+      color: rgba(255,248,235,0.80);
+      margin: 0;
+      max-width: 26em;
+      position: absolute;
+      inset: 0;
+      opacity: 1;
+      transition: opacity 0.45s ease;
+      pointer-events: auto;
+    }
+    .formula-card.pricing-open .formula-desc {
+      opacity: 0;
+      pointer-events: none;
+    }
+    /* Bullet list — used in descriptions for Thematic / Membership */
+    .formula-list,
+    ul.formula-desc.formula-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+    }
+    .formula-list li {
+      position: relative;
+      padding-left: 1.2em;
+    }
+    .formula-list li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.72em;
+      width: 0.6em; height: 1px;
+      background: rgba(210,168,135,0.6);
+    }
+    .formula-desc .formula-list { margin-top: 1.2vh; }
+    .formula-desc p { margin: 0; }
+
+    /* Expandable protocol items (Thematic card) */
+    .formula-protocols { gap: 0.35em; }
+    .formula-protocols li { padding-left: 0; }
+    .formula-protocols li::before { content: none; }
+    .protocol-head {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      font: inherit;
+      padding: 0.15em 0;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.7em;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.3s ease;
+    }
+    .protocol-head:focus { outline: none; }
+    .protocol-head:focus-visible { outline: 1px dashed rgba(255,240,220,0.35); outline-offset: 3px; }
+    .protocol-head .p-sign {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      font-size: 0.95em;
+      color: rgba(210,168,135,0.9);
+      display: inline-block;
+      width: 0.9em;
+      transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), color 0.3s ease;
+    }
+    .protocol.is-open .protocol-head .p-sign {
+      transform: rotate(45deg);
+      color: rgba(255,235,210,1);
+    }
+    .protocol-head:hover { color: rgba(255,235,210,1); }
+    .protocol-head:hover .p-sign { color: rgba(255,235,210,1); }
+    .protocol-detail {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      padding-left: 1.6em;
+      padding-right: 0.2em;
+      color: rgba(255,248,235,0.7);
+      font-size: 0.92em;
+      line-height: 1.55;
+      transition: max-height 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease, padding 0.4s ease;
+    }
+    .protocol.is-open .protocol-detail {
+      max-height: 8em;
+      opacity: 1;
+      padding-top: 0.35em;
+      padding-bottom: 0.55em;
+    }
+
+    /* Pricing — overlays the body area, cross-fading with description */
+    .formula-pricing {
+      position: absolute;
+      inset: 0;
+    }
+    .formula-pricing-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+    .formula-card.pricing-open .formula-pricing-inner {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .pricing-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35em;
+      padding: 0;
+      flex: 1;
+    }
+    .pricing-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05em;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(10.5px, 0.76vw, 12.5px);
+      font-weight: 300;
+      line-height: 1.35;
+      color: rgba(255,248,235,0.78);
+      padding-bottom: 0.35em;
+      border-bottom: 1px solid rgba(255,240,220,0.07);
+    }
+    .pricing-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .pricing-row .k {
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.86em;
+      color: rgba(210,168,135,0.85);
+      font-weight: 500;
+    }
+    .pricing-row .v {
+      color: rgba(255,248,235,0.92);
+      font-weight: 300;
+    }
+    .pricing-row.single { gap: 0; }
+    .pricing-row.single .v {
+      color: rgba(255,244,224,0.9);
+    }
+    .pricing-row.duo {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1em;
+    }
+    .pricing-row.duo .v { text-align: right; }
+
+    /* Consistent 2-line format for Single Session pricing rows
+       Line 1 — treatment name (left, uppercase tracked) + duration (right, muted)
+       Line 2 — price (DM Sans, white) */
+    .p-row-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1em;
+      margin-bottom: 0.1em;
+    }
+    .p-name {
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      color: #fff;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+    .p-dur {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72em;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.75);
+      font-weight: 400;
+      flex-shrink: 0;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .p-price {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: 0.92em;
+      color: rgba(255,248,235,0.72);
+      letter-spacing: 0.01em;
+    }
+
+    /* Actions — single row, see-pricing text-link aligned with CTA pill */
+    .formula-actions {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2em;
+      margin-top: auto;
+      padding-top: 1.4vh;
+      min-height: 2.8em;
+    }
+    .pricing-toggle {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(8px, 0.6vw, 10px);
+      font-weight: 500;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(210,168,135,0.9);
+      background: transparent;
+      border: 0;
+      padding: 0.4em 0;
+      cursor: pointer;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+      flex-shrink: 0;
+    }
+    .pricing-toggle::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -0.1em;
+      width: 100%; height: 1px;
+      background: rgba(210,168,135,0.5);
+      transition: background 0.3s ease;
+    }
+    .pricing-toggle:hover { color: rgba(255,235,210,1); }
+    .pricing-toggle:hover::after { background: rgba(255,235,210,0.9); }
+    .pricing-toggle:focus { outline: none; }
+    .pricing-toggle:focus-visible { outline: 1px dashed rgba(255,240,220,0.4); outline-offset: 4px; }
+    .formula-card.pricing-open .pricing-toggle { color: rgba(255,235,210,1); }
+    .formula-card.pricing-open .pricing-toggle::after { background: rgba(255,235,210,0.9); }
+
+    .formula-cta { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <canvas id="c-grad"></canvas>
+  <canvas id="c-grain"></canvas>
+  <div class="vignette"></div>
+
+  <a class="brand-mark" href="/" aria-label="Samma — back to home">
+    <img class="brand-logo"
+         src="logo/Samma logo pack/Digital (RGB)/Samma_Logo_RGB_White.svg"
+         alt="Samma">
+    <span class="brand-location">Geneva</span>
+  </a>
+
+  <header class="topbar-right">
+    <div class="topnav-social" aria-label="Samma on social media">
+      <a href="https://instagram.com/samma.geneva" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a href="https://facebook.com/samma.geneva" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14.5 21v-7h2.4l.35-2.85h-2.75V9.3c0-.8.25-1.35 1.4-1.35h1.5V5.4a20.3 20.3 0 0 0-2.15-.1c-2.15 0-3.6 1.3-3.6 3.7v2.15H9.3V14h2.35v7z"/>
+        </svg>
+      </a>
+    </div>
+    <a class="cta cta-book" href="#book">
+      <span>Book a session</span>
+      <span class="arrow">&rarr;</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menuPanel">
+      <span class="menu-bars" aria-hidden="true">
+        <span class="bar bar-1"></span>
+        <span class="bar bar-2"></span>
+        <span class="bar bar-3"></span>
+      </span>
+    </button>
+  </header>
+
+  <aside class="menu-panel" id="menuPanel" aria-hidden="true">
+    <nav class="menu-nav">
+      <ul class="menu-list">
+        <li><a href="/" data-menu-item>Home</a></li>
+        <li><a href="/practices" data-menu-item>Practices</a></li>
+        <li><a href="/offer.html" class="is-current" data-menu-item>Offer</a></li>
+        <li><a href="/booking" data-menu-item>Booking</a></li>
+        <li><a href="/narrative.html" data-menu-item>Narrative</a></li>
+      </ul>
+    </nav>
+    <div class="menu-foot">
+      <a href="mailto:bookings@samma.ch">bookings@samma.ch</a>
+      <a href="tel:+41220000000">+41 22 000 00 00</a>
+      <span>12 Rue du Rh&ocirc;ne, 1202 Geneva</span>
+      <div class="menu-foot-social" aria-label="Samma on social media">
+        <a href="https://instagram.com/samma.geneva" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a href="https://facebook.com/samma.geneva" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14.5 21v-7h2.4l.35-2.85h-2.75V9.3c0-.8.25-1.35 1.4-1.35h1.5V5.4a20.3 20.3 0 0 0-2.15-.1c-2.15 0-3.6 1.3-3.6 3.7v2.15H9.3V14h2.35v7z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+  <div class="menu-scrim" id="menuScrim" aria-hidden="true"></div>
+
+  <main class="offer">
+
+    <div class="formulas">
+
+      <!-- Single Session -->
+      <article class="formula-card" data-formula>
+        <h2 class="formula-name">Single Session</h2>
+        <div class="formula-body">
+          <p class="formula-desc">A single session, exactly when you need it. Ideal for discovering our approach or addressing a specific need.</p>
+          <div class="formula-pricing">
+          <div class="formula-pricing-inner">
+            <div class="pricing-list">
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Acupuncture</span><span class="p-dur">45 min</span></div>
+                <div class="p-price">Initial CHF 160 &middot; Follow-up CHF 150</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Herbal medicine</span><span class="p-dur">45&ndash;60 min</span></div>
+                <div class="p-price">Initial CHF 170 &middot; Follow-up CHF 160</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Functional medicine &amp; nutrition</span><span class="p-dur">60 min</span></div>
+                <div class="p-price">CHF 160</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Fasciatherapy</span><span class="p-dur">60 min</span></div>
+                <div class="p-price">CHF 160</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Photobiomodulation</span><span class="p-dur">30 min</span></div>
+                <div class="p-price">CHF 60</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">PEMF</span><span class="p-dur">30 min</span></div>
+                <div class="p-price">CHF 60</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Hyperbaric oxygen therapy (HBOT)</span><span class="p-dur">60 min</span></div>
+                <div class="p-price">CHF 130</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Breathwork</span><span class="p-dur">30 / 60 min</span></div>
+                <div class="p-price">CHF 20 &middot; CHF 40</div>
+              </div>
+              <div class="pricing-row">
+                <div class="p-row-head"><span class="p-name">Yoga Nidra</span><span class="p-dur">30 / 60 min</span></div>
+                <div class="p-price">CHF 20 &middot; CHF 40</div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="formula-actions">
+          <button class="pricing-toggle" type="button" aria-expanded="false">
+            <span class="pt-label">See pricing</span>
+          </button>
+          <a class="cta formula-cta" href="#book">
+            <span>Book</span>
+            <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Tailored Program -->
+      <article class="formula-card" data-formula>
+        <h2 class="formula-name">Tailored Program</h2>
+        <div class="formula-body">
+          <p class="formula-desc">A complete protocol built after an integrative assessment. Several disciplines combined, a lead practitioner, and clear milestones over three to six months.</p>
+          <div class="formula-pricing">
+            <div class="formula-pricing-inner">
+              <div class="pricing-list">
+                <div class="pricing-row single"><span class="v">On quote, after the assessment and the first meeting.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="formula-actions">
+          <button class="pricing-toggle" type="button" aria-expanded="false">
+            <span class="pt-label">See pricing</span>
+          </button>
+          <a class="cta formula-cta" href="#assessment">
+            <span>Assessment</span>
+            <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Thematic Programs -->
+      <article class="formula-card" data-formula>
+        <h2 class="formula-name">Thematic Programs</h2>
+        <div class="formula-body">
+        <div class="formula-desc">
+          <p>Protocols built around a specific health concern, combining several disciplines under a single integrative method to ensure in-depth and lasting recovery.</p>
+          <ul class="formula-list formula-protocols">
+            <li class="protocol">
+              <button class="protocol-head" type="button" aria-expanded="false">
+                <span class="p-sign" aria-hidden="true">+</span>
+                <span>Burn-out protocol</span>
+              </button>
+              <div class="protocol-detail">Nervous-system regulation, adrenal support, and restorative sleep &mdash; to rebuild energy after prolonged stress.</div>
+            </li>
+            <li class="protocol">
+              <button class="protocol-head" type="button" aria-expanded="false">
+                <span class="p-sign" aria-hidden="true">+</span>
+                <span>Inflammatory protocol</span>
+              </button>
+              <div class="protocol-detail">Diagnostic of chronic inflammation, targeted herbal and nutritional support, and tissue recovery work.</div>
+            </li>
+            <li class="protocol">
+              <button class="protocol-head" type="button" aria-expanded="false">
+                <span class="p-sign" aria-hidden="true">+</span>
+                <span>Digestive protocol</span>
+              </button>
+              <div class="protocol-detail">Gut-function assessment, microbiome support, and digestive restoration through acupuncture and herbal care.</div>
+            </li>
+            <li class="protocol">
+              <button class="protocol-head" type="button" aria-expanded="false">
+                <span class="p-sign" aria-hidden="true">+</span>
+                <span>Sleep protocol</span>
+              </button>
+              <div class="protocol-detail">Circadian-rhythm reset, nervous-system calming, and herbal support for lasting, restorative sleep.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="formula-pricing">
+          <div class="formula-pricing-inner">
+            <div class="pricing-list">
+              <div class="pricing-row single"><span class="v">CHF 650 per protocol.</span></div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div class="formula-actions">
+          <button class="pricing-toggle" type="button" aria-expanded="false">
+            <span class="pt-label">See pricing</span>
+          </button>
+          <a class="cta formula-cta" href="#thematic">
+            <span>Protocols</span>
+            <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Membership -->
+      <article class="formula-card" data-formula>
+        <h2 class="formula-name">Membership</h2>
+        <div class="formula-body">
+          <ul class="formula-desc formula-list">
+            <li>5 free treatment sessions per month of your choice</li>
+            <li>Invitation to our workshops, events, and partnerships with exceptional health experts</li>
+            <li>Access to our daily meditation sessions in the Dharma Hall as well as to our daily Dharma talks</li>
+          </ul>
+          <div class="formula-pricing">
+            <div class="formula-pricing-inner">
+              <div class="pricing-list">
+                <div class="pricing-row duo"><span class="k">Monthly</span><span class="v">CHF 360</span></div>
+                <div class="pricing-row duo"><span class="k">Annual</span><span class="v">CHF 3,500</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="formula-actions">
+          <button class="pricing-toggle" type="button" aria-expanded="false">
+            <span class="pt-label">See pricing</span>
+          </button>
+          <a class="cta formula-cta" href="#membership">
+            <span>Subscribe</span>
+            <span class="arrow">&rarr;</span>
+          </a>
+        </div>
+      </article>
+
+    </div>
+
+  </main>
+
+  <footer class="o-footer">
+    <div class="o-footer-cols">
+      <div class="o-footer-col">
+        <span class="o-footer-label">Contact</span>
+        <p>12 Rue du Rh&ocirc;ne &mdash; 1201 Gen&egrave;ve</p>
+        <a href="tel:+41227521282">+41 (0) 22 752 12 82</a>
+        <a href="mailto:bookings@samma.ch">bookings@samma.ch</a>
+      </div>
+      <div class="o-footer-col">
+        <span class="o-footer-label">Opening hours</span>
+        <p>7 / 7 &mdash; 8 am to 8 pm</p>
+      </div>
+      <div class="o-footer-col">
+        <span class="o-footer-label">Explore</span>
+        <a href="#blog">Blog</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="o-footer-col">
+        <span class="o-footer-label">Visit</span>
+        <a href="#book">Book an appointment</a>
+        <a href="#waitlist">Join the waitlist</a>
+      </div>
+    </div>
+    <div class="o-footer-legal">
+      <a href="#terms">Terms</a>
+      <a href="#privacy">Privacy</a>
+      <span>&copy; Samma</span>
+    </div>
+  </footer>
+
+  <script>
+    /* ── Palette ── */
+    const P = {
+      glow:  [210,168,135],
+      warm:  [185,135,100],
+      mid:   [160, 90, 60],
+      queen: [122, 65, 48],
+      dark:  [ 48, 20, 12],
+      shadow:[ 52, 22, 14]
+    };
+    const rgba = (c,a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+    const gc  = document.getElementById('c-grad');
+    const ctx = gc.getContext('2d');
+    let W = 0, H = 0;
+    function resizeGrad() {
+      const dpr = window.devicePixelRatio || 1;
+      W = window.innerWidth; H = window.innerHeight;
+      gc.width  = W * dpr; gc.height = H * dpr;
+      gc.style.width  = W + 'px'; gc.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function blob(cx, cy, r, color, alpha) {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0,    rgba(color, alpha));
+      g.addColorStop(0.25, rgba(color, alpha * 0.78));
+      g.addColorStop(0.50, rgba(color, alpha * 0.42));
+      g.addColorStop(0.75, rgba(color, alpha * 0.12));
+      g.addColorStop(1,    rgba(color, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+    const CYCLE = 28, AMP = 0.22;
+    function drift(t, f1, p1, f2, p2) {
+      return AMP * (0.65 * Math.sin((t / CYCLE) * Math.PI * 2 * f1 + p1)
+                  + 0.35 * Math.sin((t / CYCLE) * Math.PI * 2 * f2 + p2));
+    }
+    const BT = [
+      {rx:.28,ry:.48,rr:.38,c:P.glow,  a:.60, xf1:1,  xp1:0,   xf2:.4, xp2:3.8, yf1:.7, yp1:1.5, yf2:.3, yp2:5.2},
+      {rx:.55,ry:.12,rr:.34,c:P.warm,  a:.52, xf1:.6, xp1:2.8, xf2:.35,xp2:.9,  yf1:.9, yp1:.4,  yf2:.5, yp2:4.1},
+      {rx:.78,ry:.75,rr:.32,c:P.warm,  a:.48, xf1:.8, xp1:1.2, xf2:.45,xp2:5.5, yf1:1.1,yp1:3.5, yf2:.3, yp2:1  },
+      {rx:.92,ry:.55,rr:.30,c:P.mid,   a:.42, xf1:.5, xp1:.8,  xf2:.6, xp2:2.9, yf1:1.3,yp1:2.2, yf2:.4, yp2:4.8},
+      {rx:.72,ry:.38,rr:.33,c:P.dark,  a:.45, xf1:.9, xp1:3,   xf2:.55,xp2:1.6, yf1:.6, yp1:1.8, yf2:.35,yp2:5  },
+      {rx:.08,ry:.15,rr:.35,c:P.shadow,a:.44, xf1:.7, xp1:2.4, xf2:.5, xp2:.3,  yf1:1,  yp1:.6,  yf2:.4, yp2:3.4},
+      {rx:.45,ry:.92,rr:.36,c:P.dark,  a:.42, xf1:1.2,xp1:1,   xf2:.3, xp2:4.5, yf1:.5, yp1:3.2, yf2:.6, yp2:1.3},
+      {rx:.38,ry:.30,rr:.26,c:P.glow,  a:.50, xf1:1.4,xp1:.2,  xf2:.45,xp2:3,   yf1:.8, yp1:2.6, yf2:.5, yp2:5.8},
+      {rx:.18,ry:.65,rr:.30,c:P.glow,  a:.55, xf1:.9, xp1:1.8, xf2:.5, xp2:4.2, yf1:1.1,yp1:0.8, yf2:.4, yp2:3.6},
+      {rx:.65,ry:.50,rr:.28,c:P.warm,  a:.50, xf1:1.1,xp1:3.5, xf2:.6, xp2:1.4, yf1:.7, yp1:2.8, yf2:.45,yp2:5.5}
+    ];
+    let mX = 0, mY = 0, tmX = 0, tmY = 0;
+    document.addEventListener('mousemove', e => { tmX = e.clientX; tmY = e.clientY; });
+
+    function drawGradient(t) {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const docH = Math.max(document.documentElement.scrollHeight, H);
+      const sections = Math.ceil(docH / H) + 1;
+      const D = Math.max(W, H);
+      const breathR = 1 + 0.14 * Math.sin(t / 12 * Math.PI * 2);
+      mX += (tmX - mX) * 0.04;
+      mY += (tmY - mY) * 0.04;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = rgba(P.queen, 1);
+      ctx.fillRect(0, 0, W, H);
+      const parallax = 0.42;
+      for (let s = 0; s < sections; s++) {
+        const sOff = (s % 2 === 0) ? 0 : 0.12;
+        const aVar = 1 + 0.12 * Math.sin(s * 1.7 + 0.5);
+        for (let i = 0; i < BT.length; i++) {
+          const b = BT[i];
+          const docX = W * (b.rx + sOff * (b.rx > 0.5 ? -1 : 1))
+                     + W * drift(t, b.xf1, b.xp1 + s * 0.7, b.xf2, b.xp2 + s * 1.3);
+          const docY = s * H + H * b.ry
+                     + H * drift(t, b.yf1, b.yp1 + s * 0.5, b.yf2, b.yp2 + s * 0.9);
+          const screenY = docY - scrollY * parallax;
+          const r = D * b.rr * breathR;
+          if (screenY < -r * 1.5 || screenY > H + r * 1.5) continue;
+          blob(docX, screenY, r, b.c, b.a * aVar);
+        }
+      }
+    }
+
+    const gnc = document.getElementById('c-grain');
+    const gnx = gnc.getContext('2d');
+    let grainImg, grainW, grainH;
+    function resizeGrain() {
+      grainW = window.innerWidth;
+      grainH = window.innerHeight;
+      gnc.width = grainW; gnc.height = grainH;
+      grainImg  = gnx.createImageData(grainW, grainH);
+    }
+    function drawGrain() {
+      const d = grainImg.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (Math.random() > 0.38) {
+          d[i] = d[i+1] = d[i+2] = 128;
+        } else {
+          const v = (Math.random() * 2 - 1) * 60;
+          d[i]   = Math.round(128 + v * 1.12);
+          d[i+1] = Math.round(128 + v * 0.88);
+          d[i+2] = Math.round(128 + v * 0.62);
+        }
+        d[i+3] = 255;
+      }
+      gnx.putImageData(grainImg, 0, 0);
+    }
+    let lastGrainTime = 0;
+    const GRAIN_INTERVAL = 100;
+    let t0 = null;
+    function loop(ts) {
+      requestAnimationFrame(loop);
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000;
+      drawGradient(elapsed);
+      if (ts - lastGrainTime > GRAIN_INTERVAL) { drawGrain(); lastGrainTime = ts; }
+    }
+    function init() { resizeGrad(); resizeGrain(); drawGrain(); }
+    init();
+    window.addEventListener('resize', init);
+    requestAnimationFrame(loop);
+
+    /* Menu */
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel  = document.getElementById('menuPanel');
+    const menuScrim  = document.getElementById('menuScrim');
+    function openMenu() {
+      document.body.classList.add('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'true');
+      menuToggle.setAttribute('aria-label', 'Close menu');
+      menuPanel.setAttribute('aria-hidden', 'false');
+    }
+    function closeMenu() {
+      document.body.classList.remove('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Open menu');
+      menuPanel.setAttribute('aria-hidden', 'true');
+    }
+    function toggleMenu() {
+      if (document.body.classList.contains('menu-open')) closeMenu(); else openMenu();
+    }
+    menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+    menuScrim.addEventListener('click', closeMenu);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) closeMenu();
+    });
+    document.querySelectorAll('[data-menu-item]').forEach(link => {
+      link.addEventListener('click', () => closeMenu());
+    });
+
+    /* Pricing reveal — independent per card */
+    document.querySelectorAll('[data-formula]').forEach(card => {
+      const btn = card.querySelector('.pricing-toggle');
+      const label = btn.querySelector('.pt-label');
+      btn.addEventListener('click', () => {
+        const isOpen = card.classList.toggle('pricing-open');
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if (label) label.textContent = isOpen ? 'Hide pricing' : 'See pricing';
+      });
+    });
+
+    /* Thematic protocols — single-open accordion */
+    document.querySelectorAll('.protocol-head').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const li = btn.closest('.protocol');
+        const willOpen = !li.classList.contains('is-open');
+        // Close all siblings
+        li.parentElement.querySelectorAll('.protocol.is-open').forEach(other => {
+          other.classList.remove('is-open');
+          const b = other.querySelector('.protocol-head');
+          if (b) b.setAttribute('aria-expanded', 'false');
+        });
+        if (willOpen) {
+          li.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

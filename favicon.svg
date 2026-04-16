@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="952 -28 300 300" fill="none">
+  <defs>
+    <!-- Warm white glow matching the homepage logoBreath -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="b1"/>
+      <feColorMatrix in="b1" type="matrix"
+        values="0 0 0 0 1
+                0 0 0 0 0.90
+                0 0 0 0 0.74
+                0 0 0 0.85 0" result="warm"/>
+      <feGaussianBlur stdDeviation="14" in="SourceGraphic" result="b2"/>
+      <feColorMatrix in="b2" type="matrix"
+        values="0 0 0 0 1
+                0 0 0 0 0.84
+                0 0 0 0 0.66
+                0 0 0 0.50 0" result="warm2"/>
+      <feMerge>
+        <feMergeNode in="warm2"/>
+        <feMergeNode in="warm"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Red Sea of Sand backdrop -->
+    <radialGradient id="seaOfSand" cx="50%" cy="50%" r="75%">
+      <stop offset="0%"  stop-color="#8A4C3A"/>
+      <stop offset="55%" stop-color="#723D2E"/>
+      <stop offset="100%" stop-color="#582B1F"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Tile background (matches favicon viewBox) -->
+  <rect x="952" y="-28" width="300" height="300" rx="36" ry="36" fill="url(#seaOfSand)"/>
+
+  <!-- The SECOND 'A' from the Samma logo (paths 2 + 5 of Samma_Logo_RGB_White.svg) -->
+  <g filter="url(#glow)">
+    <!-- Overline bar above the elevated letter -->
+    <path d="M1173.71 9.95703L1171.31 24.7227H1032.28L1034.68 9.95703H1173.71Z" fill="#ffffff"/>
+    <!-- The A body -->
+    <path d="M1190.04 234.026H1164.5L1141.31 183.235L1136.32 171.784L1096.97 85.7619L1057.34 171.784L1052.06 183.235L1028.86 234.026H1015.94L1095.6 63.3242H1110.38L1190.04 234.026Z" fill="#ffffff"/>
+  </g>
+</svg>
